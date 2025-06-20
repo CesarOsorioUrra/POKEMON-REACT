@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useState } from 'react'
 import { NavLink } from "react-router-dom";
 
-export function RenderizadoPokemones({name, url}){
+export function RenderizadoPokemones({name, url, id}){
     
     const [images, setImages] = useState([]); //se define una variable que podrá ser usada dentro del return, y a la cual se le podrá 
     //asignar distintos valores con setImages(),  
@@ -28,7 +28,7 @@ export function RenderizadoPokemones({name, url}){
         <div className="col col-md-2" id="articulo">
                 <h4>{name}</h4>
                 <img src= {images} />
-                <NavLink to={`/chat/${name}`}>
+                <NavLink to={`/chat/${id}`}>
                     <p><button>CHAT</button></p>
                 </NavLink>
                 <p><button id={name} className="heart">LIKE</button></p>			

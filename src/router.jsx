@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
        Component: App,
     },
     {
-       path: "/chat/:pokemon_nombre",
+       path: "/chat/:pokemon_id",
        Component: PaginaChat,
     },
     {
