@@ -3,36 +3,22 @@ import './App.css'
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap/dist/js/bootstrap.js"
 import { useEffect } from "react";
-<<<<<<< HEAD
 import { PaginaInicial } from './pages/PaginaInicial';
 import { RenderInicial } from './components/RenderInicial';
-=======
-import { PaginaInicial } from './components/PaginaInicial';
-import { RenderInicial } from './pages/RenderInicial';
->>>>>>> 6e5d49527b1f75728be2c9d748121feb7443dbdf
 
 function App() {
 
 //ERROR SE DEBE A QUE SE DESORDENA EL ORDEN DE RENDERIZADO DESPUES DE CONVERTIR A JSON
 //COLOCAR COMPONENTES
-
-
-<<<<<<< HEAD
   const [pokemones, setPokemones] = useState([]); //pokemones es un arreglo que tiene varios objetos
-=======
-  const [pokemones, setPokemones] = useState([]);
->>>>>>> 6e5d49527b1f75728be2c9d748121feb7443dbdf
   const [numeropagina, setNumeroPagina] = useState(1); //el numero de pagina debe cambiarse con un setNumeroPagina 
   // que esté dentro de una función onlick de un botón para cambiar página
   //se coloca primero un numero de pagina 1
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(12);
 
-<<<<<<< HEAD
-=======
-  const [asc, setAsc] = useState(0);
+  const [storage, setStorage] = useState(0);
 
->>>>>>> 6e5d49527b1f75728be2c9d748121feb7443dbdf
   useEffect(() => {
     const buttonpagant = document.getElementById("buttonpagant")
     const buttonpagsgte = document.getElementById("buttonpagsgte")
@@ -49,9 +35,10 @@ function App() {
         obtenerpost(offset, limit)
     }
 
-<<<<<<< HEAD
     obtenerpost(offset, limit) //obtenerpost se ejecuta después de que se renderizan los elementos JSX iniciales, paras eso usa useEffect
     
+    //console.log(pokemones) al inicio se muestra solo el arreglo vacio porque se imprime el estado inicial de la lista pokemones
+    //antes de que se ejecute la función asincrónica obtenerpost(), la cual es la que agrega los pokemones obtenidos en el fetch, a la lista 
 
     document.getElementById("buttonbuscar").onclick = function buscarpokemon(){
       todoslospokemon()
@@ -63,49 +50,54 @@ function App() {
   //entones, si se realiza una busqueda, se hace fetch de todos los pokemon, pero si se cambia de pagina
   //...se cambia de estado, haciendo que se rendericen solo los pokemones de la pagina siguiente
   //... y no se siga mostrando el pokemon que se buscó
-=======
-
-
-    pokemones.map((pokemon)=>{
-        //const valor = localStorage.getItem(`${pokemon.name}`)
-        const like = document.getElementById(`${pokemon.name}`)
-        //console.log(like)
-        /*
-        if(valor){
-            like.style.setProperty('--c', 'blue'); 
-            like.style.color = "yellow";
-        }
-        */
-        like.onclick = function darlike(){
-          console.log("Hola")
-          /*
-            const valor = localStorage.getItem(`${pokemon.name}`);
-            if(!valor){
-                localStorage.setItem(`${pokemon.name}`, like.id);
-                like.style.setProperty('--c', 'blue'); //Se modifica la variable de css "--c" cada vez que se hace click en corazón
-                like.style.color = "yellow";
-            }
-            else if(valor){
-                localStorage.removeItem(`${pokemon.name}`);
-                like.style.setProperty('--c', 'lightgray');
-                like.style.color = "buttontext";
-            }
-          */
-        }
-    })
-
-
-    obtenerpost(offset, limit) //obtenerpost se ejecuta después de que se renderizan los elementos JSX iniciales, paras eso usa useEffect
-
-  }, [numeropagina]) //lo que se haga en cada renderizado, dependerá del estado actual de numeropagina
->>>>>>> 6e5d49527b1f75728be2c9d748121feb7443dbdf
  
+  useEffect(()=>{
+    //si se coloca este efecto en el useEffect que tiene como dependencia a [numeropagina]
+    //entonces solo se podrá activar este código cuando se haga un cambio de página
+    //por lo tanto de coloca en otro useEffect el cual se activará cada vez que haya un renderizado (dependencia [storage])
+    pokemones.forEach((pokemon)=>{
+          //localStorage.clear()
+          const key = localStorage.getItem(`${pokemon.name} item`);
+          const value = document.getElementById(`${pokemon.name}`)
+
+          //se checkea al renderizado de cada pagina si es que existe o no la key almacenada en localstorage
+          //si existe, entonces el corazón se torna rojo, si no existe, el corazón se torna gris
+          if(key){
+              value.style.setProperty('--c', 'red'); 
+              value.style.color = "yellow";
+          }
+          else if(!key){
+              value.style.setProperty('--c', 'lightgray'); 
+              value.style.color = "buttontext";
+          }
+
+          //estando presentemente en el renderizado de una página, cuando se hace click en un corazón, este se torna rojo
+          //...y se agrega al localstorage el item con key '${pokemon.name} item' y value '${pokemon.name}'
+          //...y si se hace click nuevamente en el corazón, entonces este se torna gris y se elimina del localstorage
+          //...el item con key '${pokemon.name} item' y value '${pokemon.name}' creado anteriormente
+          value.onclick = function darlike(){
+              const key = localStorage.getItem(`${pokemon.name} item`);
+              if(!key){
+                  localStorage.setItem(`${pokemon.name} item`, value.id);
+                  value.style.setProperty('--c', 'red'); //Se modifica la variable de css "--c" cada vez que se hace click en corazón
+                  value.style.color = "yellow";
+              }
+              else if(key){
+                  localStorage.removeItem(`${pokemon.name} item`);
+                  value.style.setProperty('--c', 'lightgray');
+                  value.style.color = "buttontext";
+              }
+          }
+    })
+  },[storage])
+
+
+
     //MOSTRAR POKEMON AL INICIO
 
     async function obtenerpost(offset, limit){
         const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`) //se puede pasar el offset como variable js
         const datos = await respuesta.json()
-<<<<<<< HEAD
         const datosASC = datos.results.slice().sort((a,b) => a.name.localeCompare(b.name)) //slice() es para copiar el arreglo y no modificar el arreglo original
         const datosDESC = datos.results.slice().sort((a,b) => b.name.localeCompare(a.name))
         setPokemones(datos.results)   
@@ -123,6 +115,7 @@ function App() {
           buttondesc.onclick = function desc(){
               setPokemones(datosDESC)
         }   
+        setStorage(storage => storage + 1)
     }
 
     async function todoslospokemon(){
@@ -137,28 +130,9 @@ function App() {
                 setPokemones(pokemonbuscado)
             }
         })
+        setStorage(storage => storage + 1)
     }
 
-=======
-
-        //buscar como ordenar segun el parametro en el objeto
-        const listapokemones = []
-        datos.results.forEach((pokemon)=>{
-          listapokemones.push(pokemon.name)
-        })
-        setPokemones(datos.results)
-    }
-
-    useEffect(()=>{
-          const buttondesc = document.getElementById("buttondesc")
-          const buttonasc = document.getElementById("buttonasc")
-          buttonasc.onclick = function asc(){
-              setAsc(asc => asc + 1)
-              obtenerpost(offset, limit)
-          }
-    },[asc])
-
->>>>>>> 6e5d49527b1f75728be2c9d748121feb7443dbdf
   return (
     <>
         <PaginaInicial numeropagina={numeropagina}/>
