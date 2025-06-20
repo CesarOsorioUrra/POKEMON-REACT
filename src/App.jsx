@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap/dist/js/bootstrap.js"
 import { useEffect } from "react";
 import { PaginaInicial } from './pages/PaginaInicial';
-import { RenderInicial } from './components/RenderInicial';
+import { RenderizadoPokemones } from './components/RenderizadoPokemones';
 
 function App() {
 
@@ -98,6 +98,7 @@ function App() {
     async function obtenerpost(offset, limit){
         const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`) //se puede pasar el offset como variable js
         const datos = await respuesta.json()
+
         const datosASC = datos.results.slice().sort((a,b) => a.name.localeCompare(b.name)) //slice() es para copiar el arreglo y no modificar el arreglo original
         const datosDESC = datos.results.slice().sort((a,b) => b.name.localeCompare(a.name))
         setPokemones(datos.results)   
@@ -140,7 +141,7 @@ function App() {
             <div className="row">
             {
                 pokemones.length > 0 && pokemones.map((pokemon, index) => {
-                    return <RenderInicial key={index} name={pokemon.name} url={pokemon.url}/>
+                    return <RenderizadoPokemones key={index} name={pokemon.name} url={pokemon.url}/>
                 })
             }
             </div>
