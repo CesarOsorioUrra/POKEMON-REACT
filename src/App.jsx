@@ -98,6 +98,7 @@ function App() {
     async function obtenerpost(offset, limit){
         const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`) //se puede pasar el offset como variable js
         const datos = await respuesta.json()
+
         const datosASC = datos.results.slice().sort((a,b) => a.name.localeCompare(b.name)) //slice() es para copiar el arreglo y no modificar el arreglo original
         const datosDESC = datos.results.slice().sort((a,b) => b.name.localeCompare(a.name))
         setPokemones(datos.results)   

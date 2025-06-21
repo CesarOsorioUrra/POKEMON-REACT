@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useState } from 'react'
+import { NavLink } from "react-router-dom";
 
 export function RenderizadoPokemones({name, url}){
     
@@ -27,7 +28,9 @@ export function RenderizadoPokemones({name, url}){
         <div className="col col-md-2" id="articulo">
                 <h4>{name}</h4>
                 <img src= {images} />
-                <p><button>CHAT</button></p>
+                <NavLink to={`/chat/${name}`}>
+                    <p><button>CHAT</button></p>
+                </NavLink>
                 <p><button id={name} className="heart">LIKE</button></p>			
         </div>		
         </>
