@@ -3,8 +3,8 @@ import './App.css'
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap/dist/js/bootstrap.js"
 import { useEffect } from "react";
-import { PaginaInicial } from './components/PaginaInicial';
 import { RenderizadoPokemones } from './components/RenderizadoPokemones';
+import { PaginaInicial } from './components/PaginaInicial';
 
 function App() {
 
@@ -101,7 +101,7 @@ function App() {
 
         const datosASC = datos.results.slice().sort((a,b) => a.name.localeCompare(b.name)) //slice() es para copiar el arreglo y no modificar el arreglo original
         const datosDESC = datos.results.slice().sort((a,b) => b.name.localeCompare(a.name))
-        setPokemones(datos.results)   
+        setPokemones(datos.results)     
 
         //no se pueden leer pokemonesASC ni pokemone DESC en esta función
         //console.log(pokemonesASC) 
@@ -127,7 +127,6 @@ function App() {
         datos.results.forEach((pokemon)=>{
             if(pokemon.name === textbox.value){
                 pokemonbuscado.push(pokemon)
-                console.log(pokemonbuscado)
                 setPokemones(pokemonbuscado)
             }
         })
@@ -141,7 +140,9 @@ function App() {
             <div className="row">
             {
                 pokemones.length > 0 && pokemones.map((pokemon, index) => {
-                    return <RenderizadoPokemones key={index} name={pokemon.name} url={pokemon.url}/>
+                    let url = new URL(pokemon.url)
+                    const id = url.pathname.split('/').filter(segment => segment !== '')[3] //para obtener el id de pokemon que está en la url de cada pokemón
+                    return <RenderizadoPokemones key={index} name={pokemon.name} url={pokemon.url} id={id}/>
                 })
             }
             </div>

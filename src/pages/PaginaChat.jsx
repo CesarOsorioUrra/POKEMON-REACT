@@ -1,6 +1,7 @@
 import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { RenderizadoChat } from "../components/RenderizadoChat";
 
 export default function PaginaChat() {
 
@@ -10,74 +11,62 @@ export default function PaginaChat() {
     const params = useParams(); //permite ocupar el parametro que se está adjuntando desde la URL
     //en este caso solo se está pasando el nombre del pokemon, lo que sería params.pokemon_nombre
 
-    const pokemon_nombre = params.pokemon_nombre
+    const pokemon_id = params.pokemon_id
 
 
     async function todoslospokemon(){
-        const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=0&limit=10277`) //se puede pasar el offset como variable js
-        const datos = await respuesta.json()
-        datos.results.forEach((pokemon)=>{
+        const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon_id}`) //se puede pasar el offset como variable js
+        const datospokemon = await respuesta.json()
 
-            if(pokemon.name === pokemon_nombre){
+        let habilidades = []
+        let movimientos = []
+        let estadisticas = []
 
-                async function obtenerpostpokemon(){
-                    const respuesta2 = await fetch(`${pokemon.url}`) //colocar ` ` en lugar de " ", o sino aparece error CORS
-                    const datospokemon = await respuesta2.json()
-
-                    let habilidades = []
-                    let movimientos = []
-                    let estadisticas = []
-
-                    datospokemon.abilities.forEach((abilities)=>{
-                        habilidades.push(abilities.ability.name)
-                    })        
-                    datospokemon.moves.forEach((moves)=>{
-                        movimientos.push(moves.move.name)
-                    })                      
-                    datospokemon.stats.forEach((stats)=>{
-                        estadisticas.push(stats.stat.name + ": " + stats.base_stat)
-                    })       
-                    
-                    
-                    setPokemonjson({
-                        "name" : pokemon.name,
-                        "abilities" : habilidades.join(", "), //transforma lista a strings separados por coma
-                        "moves" : movimientos.join(", "), 
-                        "stats" : estadisticas.join(", ")
-                    })
-                    
-                    setLecturadeapi(lecturadeapi => lecturadeapi + 1)
-                }
-            }
+        datospokemon.abilities.forEach((abilities)=>{
+            habilidades.push(abilities.ability.name)
+        })        
+        datospokemon.moves.forEach((moves)=>{
+            movimientos.push(moves.move.name)
+        })                      
+        datospokemon.stats.forEach((stats)=>{
+            estadisticas.push(stats.stat.name + ": " + stats.base_stat)
+        })       
+        
+        setPokemonjson({
+            "name" : datospokemon.name,
+            "abilities" : habilidades.join(", "), //transforma lista a strings separados por coma
+            "moves" : movimientos.join(", "), 
+            "stats" : estadisticas.join(", "),
+            "image" : datospokemon.sprites.front_default
         })
+        
+        setLecturadeapi(lecturadeapi => lecturadeapi + 1)
+                
     }
 
-    if (!pokemon_nombre) {
+    if (!pokemon_id) {
         return <div className="container py-5"><h1 className="text-center">Pokemon no encontrado</h1></div>;
     }
 
     const [messageHistory, setMessageHistory] = useState([]);
 
-
-
     useEffect(() => {
         todoslospokemon()
-    }, []);
+    },[]);
 
     useEffect(()=>{
         console.log(pokemonjson)
-        /*
+        
         const ingresodetexto = document.getElementById("ingresodetexto")
-        const prompt = "Tu nombre es: " + pokemonjson[0].name +
-        ", tus habilidades son: " + pokemonjson[0].abilities +
-        ", tus movimientos son: " + pokemonjson[0].moves +
-        ", tus estadisticas son:" + pokemonjson[0].stats
+        const prompt = "Tu nombre es: " + pokemonjson.name +
+        ", tus habilidades son: " + pokemonjson.abilities +
+        ", tus movimientos son: " + pokemonjson.moves +
+        ", tus estadisticas son:" + pokemonjson.stats
         + ingresodetexto.value
+
         sendMessage(prompt)
-        */
+        
     },[lecturadeapi])
-
-
 
     async function sendForm(formData) {
         const message = formData.get('message').trim();
@@ -127,8 +116,9 @@ export default function PaginaChat() {
             <div className="border-bottom p-3 bg-white shadow-sm">
                 <div className="container d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center gap-3">
+                        <img src={pokemonjson.image} alt={pokemonjson.name} className="rounded-circle" style={{ width: "60px", height: "60px" }} />
                         <div>
-                            <h5 className="mb-0">{pokemon_nombre}</h5>
+                            <h5 className="mb-0">{pokemonjson.name}</h5>
                         </div>
                     </div>
                     <NavLink to={`/pokemones`}>
@@ -140,15 +130,7 @@ export default function PaginaChat() {
             <div className="flex-grow-1 overflow-auto bg-light py-3">
                 <div className="container">
                     {messageHistory.map((msg, index) => (
-                        <div key={index} className={`d-flex mb-3 ${msg.sender === "user" ? "justify-content-end" : "justify-content-start"}`}>
-                            <div className={`p-3 border rounded ${msg.sender === "user" ? "bg-success bg-opacity-10 text-end" : "bg-white"}`}
-                                style={{ maxWidth: "75%" }}>
-                                <strong className="d-block mb-1">
-                                    {msg.sender === "user" ? "Tú" : pokemon_nombre}
-                                </strong>
-                                <span>{msg.text}</span>
-                            </div>
-                        </div>
+                        <RenderizadoChat key={index} sender={msg.sender} text={msg.text} name={pokemonjson.name} />
                     ))}
                 </div>
             </div>
