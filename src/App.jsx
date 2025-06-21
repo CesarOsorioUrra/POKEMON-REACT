@@ -125,7 +125,7 @@ function App() {
         let textbox = document.getElementById("textboxbuscar")
         const pokemonbuscado = []
         datos.results.forEach((pokemon)=>{
-            if(pokemon.name === textbox.value){
+            if(pokemon.name === textbox.value.toLowerCase()){
                 pokemonbuscado.push(pokemon)
                 setPokemones(pokemonbuscado)
             }
