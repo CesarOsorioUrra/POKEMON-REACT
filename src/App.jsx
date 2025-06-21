@@ -10,14 +10,14 @@ function App() {
 
 //ERROR SE DEBE A QUE SE DESORDENA EL ORDEN DE RENDERIZADO DESPUES DE CONVERTIR A JSON
 //COLOCAR COMPONENTES
-
-
   const [pokemones, setPokemones] = useState([]); //pokemones es un arreglo que tiene varios objetos
   const [numeropagina, setNumeroPagina] = useState(1); //el numero de pagina debe cambiarse con un setNumeroPagina 
   // que esté dentro de una función onlick de un botón para cambiar página
   //se coloca primero un numero de pagina 1
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(12);
+
+  const [storage, setStorage] = useState(0);
 
   useEffect(() => {
     const buttonpagant = document.getElementById("buttonpagant")
@@ -37,6 +37,8 @@ function App() {
 
     obtenerpost(offset, limit) //obtenerpost se ejecuta después de que se renderizan los elementos JSX iniciales, paras eso usa useEffect
     
+    //console.log(pokemones) al inicio se muestra solo el arreglo vacio porque se imprime el estado inicial de la lista pokemones
+    //antes de que se ejecute la función asincrónica obtenerpost(), la cual es la que agrega los pokemones obtenidos en el fetch, a la lista 
 
     document.getElementById("buttonbuscar").onclick = function buscarpokemon(){
       todoslospokemon()
@@ -49,6 +51,48 @@ function App() {
   //...se cambia de estado, haciendo que se rendericen solo los pokemones de la pagina siguiente
   //... y no se siga mostrando el pokemon que se buscó
  
+  useEffect(()=>{
+    //si se coloca este efecto en el useEffect que tiene como dependencia a [numeropagina]
+    //entonces solo se podrá activar este código cuando se haga un cambio de página
+    //por lo tanto de coloca en otro useEffect el cual se activará cada vez que haya un renderizado (dependencia [storage])
+    pokemones.forEach((pokemon)=>{
+          //localStorage.clear()
+          const key = localStorage.getItem(`${pokemon.name} item`);
+          const value = document.getElementById(`${pokemon.name}`)
+
+          //se checkea al renderizado de cada pagina si es que existe o no la key almacenada en localstorage
+          //si existe, entonces el corazón se torna rojo, si no existe, el corazón se torna gris
+          if(key){
+              value.style.setProperty('--c', 'red'); 
+              value.style.color = "yellow";
+          }
+          else if(!key){
+              value.style.setProperty('--c', 'lightgray'); 
+              value.style.color = "buttontext";
+          }
+
+          //estando presentemente en el renderizado de una página, cuando se hace click en un corazón, este se torna rojo
+          //...y se agrega al localstorage el item con key '${pokemon.name} item' y value '${pokemon.name}'
+          //...y si se hace click nuevamente en el corazón, entonces este se torna gris y se elimina del localstorage
+          //...el item con key '${pokemon.name} item' y value '${pokemon.name}' creado anteriormente
+          value.onclick = function darlike(){
+              const key = localStorage.getItem(`${pokemon.name} item`);
+              if(!key){
+                  localStorage.setItem(`${pokemon.name} item`, value.id);
+                  value.style.setProperty('--c', 'red'); //Se modifica la variable de css "--c" cada vez que se hace click en corazón
+                  value.style.color = "yellow";
+              }
+              else if(key){
+                  localStorage.removeItem(`${pokemon.name} item`);
+                  value.style.setProperty('--c', 'lightgray');
+                  value.style.color = "buttontext";
+              }
+          }
+    })
+  },[storage])
+
+
+
     //MOSTRAR POKEMON AL INICIO
 
     async function obtenerpost(offset, limit){
@@ -71,6 +115,7 @@ function App() {
           buttondesc.onclick = function desc(){
               setPokemones(datosDESC)
         }   
+        setStorage(storage => storage + 1)
     }
 
     async function todoslospokemon(){
@@ -85,6 +130,7 @@ function App() {
                 setPokemones(pokemonbuscado)
             }
         })
+        setStorage(storage => storage + 1)
     }
 
   return (
