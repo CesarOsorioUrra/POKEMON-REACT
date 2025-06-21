@@ -12,14 +12,12 @@ function App() {
 //COLOCAR COMPONENTES
 
 
-  const [pokemones, setPokemones] = useState([]);
+  const [pokemones, setPokemones] = useState([]); //pokemones es un arreglo que tiene varios objetos
   const [numeropagina, setNumeroPagina] = useState(1); //el numero de pagina debe cambiarse con un setNumeroPagina 
   // que esté dentro de una función onlick de un botón para cambiar página
   //se coloca primero un numero de pagina 1
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(12);
-
-  const [asc, setAsc] = useState(0);
 
   useEffect(() => {
     const buttonpagant = document.getElementById("buttonpagant")
@@ -37,63 +35,57 @@ function App() {
         obtenerpost(offset, limit)
     }
 
-
-
-    pokemones.map((pokemon)=>{
-        //const valor = localStorage.getItem(`${pokemon.name}`)
-        const like = document.getElementById(`${pokemon.name}`)
-        //console.log(like)
-        /*
-        if(valor){
-            like.style.setProperty('--c', 'blue'); 
-            like.style.color = "yellow";
-        }
-        */
-        like.onclick = function darlike(){
-          console.log("Hola")
-          /*
-            const valor = localStorage.getItem(`${pokemon.name}`);
-            if(!valor){
-                localStorage.setItem(`${pokemon.name}`, like.id);
-                like.style.setProperty('--c', 'blue'); //Se modifica la variable de css "--c" cada vez que se hace click en corazón
-                like.style.color = "yellow";
-            }
-            else if(valor){
-                localStorage.removeItem(`${pokemon.name}`);
-                like.style.setProperty('--c', 'lightgray');
-                like.style.color = "buttontext";
-            }
-          */
-        }
-    })
-
-
     obtenerpost(offset, limit) //obtenerpost se ejecuta después de que se renderizan los elementos JSX iniciales, paras eso usa useEffect
+    
 
+    document.getElementById("buttonbuscar").onclick = function buscarpokemon(){
+      todoslospokemon()
+    }
   }, [numeropagina]) //lo que se haga en cada renderizado, dependerá del estado actual de numeropagina
+  //cuando se realiza una busqueda, aunque se muestren todos los pokemon, se mantiene el estado actual
+  //...que esta definido por el valor-estado numeropagina, el cual solo puede cambiar
+  //...cuando se hace click en los botones para cambiar de pagina
+  //entones, si se realiza una busqueda, se hace fetch de todos los pokemon, pero si se cambia de pagina
+  //...se cambia de estado, haciendo que se rendericen solo los pokemones de la pagina siguiente
+  //... y no se siga mostrando el pokemon que se buscó
  
     //MOSTRAR POKEMON AL INICIO
 
     async function obtenerpost(offset, limit){
         const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`) //se puede pasar el offset como variable js
         const datos = await respuesta.json()
+        const datosASC = datos.results.slice().sort((a,b) => a.name.localeCompare(b.name)) //slice() es para copiar el arreglo y no modificar el arreglo original
+        const datosDESC = datos.results.slice().sort((a,b) => b.name.localeCompare(a.name))
+        setPokemones(datos.results)   
 
-        //buscar como ordenar segun el parametro en el objeto
-        const listapokemones = []
-        datos.results.forEach((pokemon)=>{
-          listapokemones.push(pokemon.name)
-        })
-        setPokemones(datos.results)
+        //no se pueden leer pokemonesASC ni pokemone DESC en esta función
+        //console.log(pokemonesASC) 
+        //console.log(pokemonesDESC)
+        //, pero si se puede leer datosASC y datosDESC
+        
+        const buttonasc = document.getElementById("buttonasc") 
+          buttonasc.onclick = function asc(){
+              setPokemones(datosASC) //cada vez que varie el estado del valor de la lista "pokemones", se va a realizar un renderizado que va a reemplazar los articulos del renderizado anterior
+        }
+        const buttondesc = document.getElementById("buttondesc")
+          buttondesc.onclick = function desc(){
+              setPokemones(datosDESC)
+        }   
     }
 
-    useEffect(()=>{
-          const buttondesc = document.getElementById("buttondesc")
-          const buttonasc = document.getElementById("buttonasc")
-          buttonasc.onclick = function asc(){
-              setAsc(asc => asc + 1)
-              obtenerpost(offset, limit)
-          }
-    },[asc])
+    async function todoslospokemon(){
+        const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=0&limit=10277`) //se puede pasar el offset como variable js
+        const datos = await respuesta.json()
+        let textbox = document.getElementById("textboxbuscar")
+        const pokemonbuscado = []
+        datos.results.forEach((pokemon)=>{
+            if(pokemon.name === textbox.value){
+                pokemonbuscado.push(pokemon)
+                console.log(pokemonbuscado)
+                setPokemones(pokemonbuscado)
+            }
+        })
+    }
 
   return (
     <>

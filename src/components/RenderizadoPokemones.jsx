@@ -9,7 +9,10 @@ export function RenderizadoPokemones({name, url}){
     useEffect(() => {
         obtenerpostpokemon(url) //se ejecuta esta función DESPUÉS de realizar la renderización que involucra a la variable
         //que está en el estado actual (la que está dentro de setImages()) 
-    }, [])
+    })
+    //useEffect, si no tiene dependencia, se produce el efecto cuando haya cualquier renderizado del componente
+    //si tiene [] como dependencia, se produce el efecto solo cuando se re-renderiza la página entera
+    //si tiene como dependencia a [variable], solo se porduce el efecto cuando se le usa la función setVariable para modificar el estado-valor de esa variable 
 
     async function obtenerpostpokemon(url){
         const respuesta2 = await fetch(`${url}`) //colocar ` ` en lugar de " ", o sino aparece error CORS
