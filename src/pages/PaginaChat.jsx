@@ -29,7 +29,7 @@ export default function PaginaChat() {
         //Mejor definir el prompt directamente de los datos en lugar de definir listas con los datos
         //, y luego un objeto con los datos de las listas (como se hizo en el commit 5), ya que esto último toma más tiempo
         //y puede llevar a problemas de sincronización
-
+        
         let prompt = 'Desde ahora eres un pokemon y tu nombre es: '
             prompt += datospokemon.name
             prompt += '. \nTus habilidades son: '
@@ -57,8 +57,20 @@ export default function PaginaChat() {
     useEffect(()=>{
         //console.log(pokemonjson)   
         //console.log(mensaje)
+        console.log(lecturadeapi)
 
-        sendMessage(mensaje)
+        //Se agrega condicional para que se envié el propmt SOLO si se comprueba que se haya
+        //realizado la lecura de la api de pokemon
+        //Con este condicional, uno se puede asegurar de que no hayan problemas relacionados
+        //a que se renderize la página antes de que se termine de la aplicar la función setMensaje()
+        //, lo cual causaba que a veces el mensaje se envie a gemini sin considerar al prompt,
+        //por lo que este prompt a veces nunca terminaba enviandose
+        //y por ende el chat no funcionaba con estabilidad
+
+        //NOTA: sin StrictMode (producción) lecturadepi será 1, pero con StrictMode (desarrollo) la lecturadeapi será 2
+        if(lecturadeapi === 1 || lecturadeapi === 2){
+            sendMessage(mensaje)
+        }
         
     },[lecturadeapi])
 
