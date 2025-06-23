@@ -2,6 +2,8 @@ import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { RenderizadoChat } from "../components/RenderizadoChat";
+import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom/client';
 
 export default function PaginaChat() {
 
@@ -68,11 +70,32 @@ export default function PaginaChat() {
         //y por ende el chat no funcionaba con estabilidad
 
         //NOTA: sin StrictMode (producción) lecturadepi será 1, pero con StrictMode (desarrollo) la lecturadeapi será 2
+
         if(lecturadeapi === 1 || lecturadeapi === 2){
+
             sendMessage(mensaje)
+            errormensajevacio()
         }
         
     },[lecturadeapi])
+
+    function errormensajevacio(){
+        
+        const ingresodetexto = document.getElementById("ingresodetexto")
+        const btnenviar = document.getElementById("btnenviar")
+        const divmensajevacio = document.getElementById("divmensajevacio")
+        const root = ReactDOM.createRoot(divmensajevacio)
+
+        btnenviar.addEventListener('click', function(){
+            const texto = ingresodetexto.value
+            if(texto === null || texto === undefined || (typeof texto === 'string' && texto.trim() === '')){
+                root.render(<p style={{color: "red", fontWeight: "bold", marginBottom: 0, textAlign: "center"}}>No se pueden enviar mensajes vacíos</p>)   
+            }
+            else{
+                root.render()   
+            }
+        })
+    }
 
     async function sendForm(formData) {
         const message = formData.get('message').trim();
@@ -113,6 +136,21 @@ export default function PaginaChat() {
             throw new Error("Error en la API de Gemini");
         }
         const data = await response.json();
+
+        //Para que el botón se active solo cuando ya termina de renderizarse el prompt
+        //asi no pueden enviarse mensajes antes de que el prompt esté disponible
+        const btnenviar = document.getElementById("btnenviar")
+        btnenviar.disabled = false
+
+        //Cuando terminan de cargarse los datos, desaparece el parrafo que dice cargando...
+        const cargando = document.getElementById("cargando")
+        //el parrafo solo desaparece cuando el div de cargando ya no tenga más elementos hijos (cuando esté vacío)
+        //esto se hace para que no se esté defininendo un root cada vez que se envíe un mensaje
+        //(lo cual la consola detecta como un error)
+        if(cargando.childNodes.length != 0){
+            const root = ReactDOM.createRoot(cargando)
+            root.render()
+        }
         return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No se obtuvo respuesta del modelo.";
     }
 
@@ -133,6 +171,8 @@ export default function PaginaChat() {
                 </div>
             </div>
 
+            <div id="cargando" style={{textAlign: "center"}} className="bg-light"><p>Cargando chat...</p></div>
+
             <div className="flex-grow-1 overflow-auto bg-light py-3">
                 <div className="container">
                     {messageHistory.map((msg, index) => (
@@ -144,13 +184,13 @@ export default function PaginaChat() {
             <div className="border-top p-3 bg-white">
                 <form className="container d-flex align-items-center gap-2" action={sendForm}>
                     <input id="ingresodetexto" type="text" name="message" className="form-control form-control-md" placeholder="Escribe tu mensaje..." />
-                    <button type="submit" className="btn btn-dark btn-md d-flex align-items-center gap-2">
+                    <button id="btnenviar" disabled type="submit" className="btn btn-dark btn-md d-flex align-items-center gap-2">
                         <span>Enviar</span>
                         <i className="bi bi-send"></i>
                     </button>
                 </form>
             </div>
-
+            <div id="divmensajevacio"></div>
         </div>
     );
 }

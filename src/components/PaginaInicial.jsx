@@ -1,23 +1,23 @@
 export function PaginaInicial({numeropagina}){
     return(
         <>
-        <div className="container-fluid" id="contenedor-bootstrap">
+        <div className="container-fluid" id="contenedor-bootstrap" style={{padding: 0}}>
             <div className="arriba">     
                 <div className = "row">
                     <div className="col col-md-1">
-                        <p>Buscar:</p>
+                        <p style={{fontFamily: "arial", padding: 0}}>Buscar:</p>
                     </div>
-                    <div className="col col-md-2">
-                        <input type="text" placeholder="charizard" id="textboxbuscar" size="10rem"/> 
+                    <div className="col col-md-2" style={{padding: 0}}>
+                        <input type="text" placeholder="charizard" id="textboxbuscar" size="15"/> 
                     </div>
                     <div className="col col-md-3" style={{textAlign : "right"}}>
-                        <button id="buttonbuscar" style={{borderRadius : "0.5rem"}}>Buscar Pokemón</button>
+                        <button id="buttonbuscar" className="botonmenu">Buscar Pokemón</button>
                     </div>
                     <div className="col col-md-3" style={{textAlign : "center"}}>
-                        <button id="buttondesc" style={{borderRadius : "0.5rem"}}>Ordenar desc.</button>
+                        <button id="buttondesc" className="botonmenu">Ordenar desc.</button>
                     </div>
                     <div className="col col-md-3" style={{textAlign : "left"}}> 
-                        <button id="buttonasc" style={{borderRadius : "0.5rem"}}>Ordenar asc.</button>
+                        <button id="buttonasc" className="botonmenu">Ordenar asc.</button>
                     </div>
                 </div>
             </div>
@@ -25,10 +25,10 @@ export function PaginaInicial({numeropagina}){
             <div className="abajo">
                 <div className = "row">
                     <div className="col col-md-6" style={{textAlign : "right"}}>
-                        <button id="buttonpagant" style={{borderRadius : "0.5rem"}}>Pág. anterior</button>
+                        <button id="buttonpagant" className="botonmenu">Pág. anterior</button>
                     </div>
                     <div className="col col-md-6" style={{textAlign : "left"}}>
-                        <button id="buttonpagsgte" style={{borderRadius : "0.5rem"}}>Pág. siguiente</button>
+                        <button id="buttonpagsgte" className="botonmenu">Pág. siguiente</button>
                     </div>
                 </div>
             </div>
@@ -36,7 +36,7 @@ export function PaginaInicial({numeropagina}){
             <div className = "row">
                 <div className="col col-md-12">
                     <div id="pagina">
-                        <p>Página {numeropagina}</p>
+                        <p><b>Página {numeropagina}</b></p>
                     </div>
                 </div>
             </div>
